@@ -19,8 +19,8 @@ registerNatives({
 
       myRequest.responseType = "arraybuffer";
       myRequest.addEventListener("load", () => {
-        thread.getBsCl().initializeClass(thread, 'Lcom/javapoly/XHRResponse;', () => {
-          const responseObj = util.newObject(thread, thread.getBsCl(), 'Lcom/javapoly/XHRResponse;');
+        thread.getLoader().initializeClass(thread, 'Lcom/javapoly/XHRResponse;', () => {
+          const responseObj = util.newObject(thread, thread.getLoader(), 'Lcom/javapoly/XHRResponse;');
           responseObj['<init>(Ljava/lang/Object;)V'](thread, [myRequest], (e) => {
             if (e) {
               thread.throwException(e);
