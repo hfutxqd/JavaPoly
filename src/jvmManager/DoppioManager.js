@@ -208,7 +208,7 @@ class DoppioManager {
 
   initJVM() {
     const options = this.getOptions();
-    const responsiveness = this.javapoly.isJavaPolyWorker ? 100 : 10;
+    const responsiveness = this.javapoly.isJavaPolyWorker ? 100 : 15;
     this.classpath.unshift("/javapoly/classes/");
     this.bfsReady.then(() => {
       Promise.all(this.mountHub).then(() => {
