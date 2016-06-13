@@ -60,6 +60,9 @@ public final class Main {
         case "OBJ_METHOD_INVOCATION":
           processObjMethodInvokation(messageId);
           break;
+        case "PRECISE_METHOD_INVOCATION":
+          processPreciseMethodInvokation(messageId);
+          break;
         case "CLASS_FIELD_READ":
           processClassFieldRead(messageId);
           break;
@@ -156,6 +159,23 @@ public final class Main {
     } catch (Exception e) {
       returnError(messageId, e);
     }
+  }
+
+  private static void processPreciseMethodInvokation(final String messageId) {
+    (new Thread() {
+      public void run() {
+        final Object[] data = bridge.getData(messageId);
+        final MethodInvoker invoker = (MethodInvoker) data[0];
+        try {
+          invoker.invoke((Object[]) data[1]);
+          bridge.returnResult(messageId, null);
+        } catch (InvocationTargetException ie) {
+          returnError(messageId, ie.getCause());
+        } catch (Exception e) {
+          returnError(messageId, e);
+        }
+      }
+    }).start();
   }
 
   private static void processObjMethodInvokation(final String messageId) {

@@ -33,6 +33,14 @@ function testEval() {
       });
     });
 
+    it('calling Java lambdas', function() {
+      return JavaPoly.type('EvalTest').then(function(EvalTest) {
+        return EvalTest.javaLambdaFromJS(10).then(function(result) {
+          expect(result).toEqual(23);
+        });
+      });
+    });
+
   });
 }
 

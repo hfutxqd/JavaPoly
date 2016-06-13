@@ -238,6 +238,10 @@ registerNatives({
             return e.unbox();
           } else if (intName === 'Ljava/lang/String;') {
             return e.toString();
+          } else if (intName === 'Lcom/javapoly/MethodInvoker;') {
+            return function() {
+              javapoly0.dispatcher.postMessage("PRECISE_METHOD_INVOCATION", 0, [e, []]);
+            }
           } else {
             return e;
           }

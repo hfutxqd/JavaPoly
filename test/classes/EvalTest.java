@@ -1,5 +1,7 @@
 import com.javapoly.Eval;
 import com.javapoly.reflect.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class EvalTest {
   public static boolean test() {
@@ -34,4 +36,15 @@ public class EvalTest {
     return jsObj.getProperty(name);
   }
 
+  public static int javaLambdaFromJS(int a) throws InterruptedException, ExecutionException {
+    final JSObject func1 = (JSObject) Eval.eval("(function(f){setTimeout(f, 100);})");
+    System.out.println("Func1 defined");
+
+    CompletableFuture<Integer> future = new CompletableFuture<>();
+
+    func1.invoke((java.util.function.Consumer<Object>)(x) -> {System.out.println("Hi from Java"); future.complete(23);});
+
+    System.out.println("waiting for the future");
+    return future.get();
+  }
 }
