@@ -131,15 +131,19 @@ public final class Main {
   }
 
   private static void processClassMethodInvokation(String messageId) {
-    final Object[] data = bridge.getData(messageId);
-    try {
-      final Object returnValue = invokeClassMethod((String) data[0], (String) data[1], (Object[]) data[2]);
-      bridge.returnResult(messageId, returnValue);
-    } catch (InvocationTargetException ie) {
-      returnError(messageId, ie.getCause());
-    } catch (Exception e) {
-      returnError(messageId, e);
-    }
+    (new Thread() {
+      public void run() {
+        final Object[] data = bridge.getData(messageId);
+        try {
+          final Object returnValue = invokeClassMethod((String) data[0], (String) data[1], (Object[]) data[2]);
+          bridge.returnResult(messageId, returnValue);
+        } catch (InvocationTargetException ie) {
+          returnError(messageId, ie.getCause());
+        } catch (Exception e) {
+          returnError(messageId, e);
+        }
+      }
+    }).start();
   }
 
   private static void processClassConstructorInvokation(String messageId) {
@@ -155,15 +159,19 @@ public final class Main {
   }
 
   private static void processObjMethodInvokation(final String messageId) {
-    final Object[] data = bridge.getData(messageId);
-    try {
-      final Object returnValue = invokeObjectMethod(data[0], (String) data[1], (Object[]) data[2]);
-      bridge.returnResult(messageId, returnValue);
-    } catch (InvocationTargetException ie) {
-      returnError(messageId, ie.getCause());
-    } catch (Exception e) {
-      returnError(messageId, e);
-    }
+    (new Thread() {
+      public void run() {
+        final Object[] data = bridge.getData(messageId);
+        try {
+          final Object returnValue = invokeObjectMethod(data[0], (String) data[1], (Object[]) data[2]);
+          bridge.returnResult(messageId, returnValue);
+        } catch (InvocationTargetException ie) {
+          returnError(messageId, ie.getCause());
+        } catch (Exception e) {
+          returnError(messageId, e);
+        }
+      }
+    }).start();
   }
 
   private static void processClassFieldRead(final String messageId) {
