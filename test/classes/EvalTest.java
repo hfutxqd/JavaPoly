@@ -3,6 +3,7 @@ import com.javapoly.reflect.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class EvalTest {
   public static boolean test() {
@@ -63,5 +64,25 @@ public class EvalTest {
     ((JSObject) promise.getProperty("catch")).invoke(promise, (Consumer<JSObject>) (e) -> future.complete(23.0));
 
     return future.get();
+  }
+
+  // Return the promise returned by a lambda invocation
+  public static JSObject javaLambdaFromJSPromise(int a) throws InterruptedException, ExecutionException {
+    final JSObject func1 =
+      (JSObject) Eval.eval("( function(f) { return new Promise((resolve, reject) => {setTimeout(() => {f(100).then(resolve, reject);}, 100)}) } )");
+
+    final JSObject promise = (JSObject) func1.invoke((Function<Double, Double>) (x) -> x * a);
+
+    return promise;
+  }
+
+  // Return the failed promise returned by a lambda invocation
+  public static JSObject javaLambdaFromJSFailedPromise(int a) throws InterruptedException, ExecutionException {
+    final JSObject func1 =
+      (JSObject) Eval.eval("( function(f) { return new Promise((resolve, reject) => {setTimeout(() => {f('xyz').then(resolve, reject);}, 100)}) } )");
+
+    final JSObject promise = (JSObject) func1.invoke((Consumer<Double>) (x) -> { /* Do nothing, this should fail anyway */});
+
+    return promise;
   }
 }
