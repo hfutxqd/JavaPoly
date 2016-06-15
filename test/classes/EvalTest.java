@@ -76,7 +76,7 @@ public class EvalTest {
     return promise;
   }
 
-  // Return the failed promise returned by a lambda invocation
+  // Return the failed promise returned by a lambda invocation with exception
   public static JSObject javaLambdaFromJSFailedPromise(int a) throws InterruptedException, ExecutionException {
     final JSObject func1 =
       (JSObject) Eval.eval("( function(f) { return new Promise((resolve, reject) => {setTimeout(() => {f('xyz').then(resolve, reject);}, 100)}) } )");

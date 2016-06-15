@@ -57,7 +57,7 @@ function testEval() {
       });
     });
 
-    it('calling Java lambdas with excpetions should return a failed promise ', function() {
+    it('calling Java lambdas with exceptions should return a failed promise ', function() {
       return new Promise(function(testResolve, testReject) {
         return JavaPoly.type('EvalTest').then(function(EvalTest) {
           return EvalTest.javaLambdaFromJSFailedPromise(10).then(function(result) {
