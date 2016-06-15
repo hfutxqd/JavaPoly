@@ -2,6 +2,7 @@ import com.javapoly.Eval;
 import com.javapoly.reflect.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
 public class EvalTest {
   public static boolean test() {
@@ -36,15 +37,31 @@ public class EvalTest {
     return jsObj.getProperty(name);
   }
 
-  public static int javaLambdaFromJS(int a) throws InterruptedException, ExecutionException {
-    final JSObject func1 = (JSObject) Eval.eval("(function(f){setTimeout(f, 100);})");
-    System.out.println("Func1 defined");
+  public static double javaLambdaFromJS(int a) throws InterruptedException, ExecutionException {
+    // Define a function which accepts another function 'f' as paramenter, and
+    // then calls f() after a timeout.
+    final JSObject func1 = (JSObject) Eval.eval("( function(f){ setTimeout(function() {f(20)}, 100); } )");
 
-    CompletableFuture<Integer> future = new CompletableFuture<>();
+    CompletableFuture<Double> future = new CompletableFuture<>();
 
-    func1.invoke((java.util.function.Consumer<Object>)(x) -> {System.out.println("Hi from Java"); future.complete(23);});
+    func1.invoke((Consumer<Double>) (x) -> {future.complete(23 + x);});
 
     System.out.println("waiting for the future");
+    return future.get();
+  }
+
+  // Check that the JS function gets a failed promise when there is an exception in Java invocation
+  public static double javaLambdaFromJSWithException(int a) throws InterruptedException, ExecutionException {
+    // Define a function which accepts another function 'f' as paramenter, and
+    // then calls f() after a timeout.
+    final JSObject func1 =
+      (JSObject) Eval.eval("( function(f) { return new Promise((resolve, reject) => {setTimeout(() => {f('xyz').then(resolve, reject);}, 100)}) } )");
+
+    final JSObject promise = (JSObject) func1.invoke((Consumer<Double>) (x) -> { /* Do nothing, this should fail anyway */});
+
+    CompletableFuture<Double> future = new CompletableFuture<>();
+    ((JSObject) promise.getProperty("catch")).invoke(promise, (Consumer<JSObject>) (e) -> future.complete(23.0));
+
     return future.get();
   }
 }

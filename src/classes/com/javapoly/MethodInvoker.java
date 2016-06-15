@@ -12,7 +12,8 @@ final class MethodInvoker {
     this.obj = obj;
   }
 
-  void invoke(Object[] args) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-    sam.invoke(obj, args);
+  Object invoke(Object[] args) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    final Object[] refArgs = Main.reflectParams(args);
+    return sam.invoke(obj, refArgs);
   }
 }

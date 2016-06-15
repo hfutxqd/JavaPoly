@@ -51,7 +51,7 @@ class DoppioJSObject extends DoppioJSValue implements JSObject {
     return null;
   }
 
-  public JSValue invoke(Object... args) {
+  public JSValue invoke(JSObject invokeOn, Object... args) {
     final Object[] unwrappedArgs = new Object[args.length];
     for (int i = 0; i < args.length; i++) {
       final Object e = args[i];
@@ -67,10 +67,10 @@ class DoppioJSObject extends DoppioJSValue implements JSObject {
         }
       }
     }
-    return Main.wrapValue(invoke(rawValue, unwrappedArgs));
+    return Main.wrapValue(invoke(rawValue, invokeOn, unwrappedArgs));
   }
 
-  private static native Object[] invoke(Object functionObj, Object... args);
+  private static native Object[] invoke(Object functionObj, Object invokeOn, Object... args);
 
   private static native Object[] getProperty(Object obj, String name);
 }

@@ -478,7 +478,7 @@ class SystemBridge implements Bridge {
     }
   }
 
-  public JSValue invoke(Object functionObj, Object...args) {
+  public JSValue invoke(Object functionObj, Integer invokeOn, Object...args) {
     try {
       final URL url = new URL("http://localhost:"+nodeServerPort+"/invoke");
       final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -490,6 +490,7 @@ class SystemBridge implements Bridge {
 
       final JsonObject msgObj = Json.createObjectBuilder()
         .add("functionId", (Integer) functionObj)
+        .add("invokeOn", invokeOn)
         .add("args", toJsonObj(args)).build();
 
       final OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());

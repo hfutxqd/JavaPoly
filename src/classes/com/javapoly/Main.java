@@ -167,8 +167,8 @@ public final class Main {
         final Object[] data = bridge.getData(messageId);
         final MethodInvoker invoker = (MethodInvoker) data[0];
         try {
-          invoker.invoke((Object[]) data[1]);
-          bridge.returnResult(messageId, null);
+          final Object returnObj = invoker.invoke((Object[]) data[1]);
+          bridge.returnResult(messageId, returnObj);
         } catch (InvocationTargetException ie) {
           returnError(messageId, ie.getCause());
         } catch (Exception e) {
@@ -271,7 +271,7 @@ public final class Main {
 
   public static Object invokeClassMethod(String className, String methodName, Object[] params) throws Exception {
     final Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(className);
-    final Object returnValue = MethodUtils.invokeStaticMethodFuzzy(clazz, methodName, bridge.reflectParams(params));
+    final Object returnValue = MethodUtils.invokeStaticMethodFuzzy(clazz, methodName, reflectParams(params));
     return returnValue;
   }
 
@@ -374,6 +374,10 @@ public final class Main {
 
   static final JSValue bridgedEval(final String s) {
     return bridge.eval(s);
+  }
+
+  static final Object[] reflectParams(final Object[] params) {
+    return bridge.reflectParams(params);
   }
 
 }
