@@ -1,5 +1,9 @@
 import com.javapoly.Eval;
 import com.javapoly.reflect.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class EvalTest {
   public static boolean test() {
@@ -34,4 +38,51 @@ public class EvalTest {
     return jsObj.getProperty(name);
   }
 
+  public static double javaLambdaFromJS(int a) throws InterruptedException, ExecutionException {
+    // Define a function which accepts another function 'f' as paramenter, and
+    // then calls f() after a timeout.
+    final JSObject func1 = (JSObject) Eval.eval("( function(f){ setTimeout(function() {f(20)}, 100); } )");
+
+    CompletableFuture<Double> future = new CompletableFuture<>();
+
+    func1.invoke((Consumer<Double>) (x) -> {future.complete(23 + x);});
+
+    System.out.println("waiting for the future");
+    return future.get();
+  }
+
+  // Check that the JS function gets a failed promise when there is an exception in Java invocation
+  public static double javaLambdaFromJSWithException(int a) throws InterruptedException, ExecutionException {
+    // Define a function which accepts another function 'f' as paramenter, and
+    // then calls f() after a timeout.
+    final JSObject func1 =
+      (JSObject) Eval.eval("( function(f) { return new Promise((resolve, reject) => {setTimeout(() => {f('xyz').then(resolve, reject);}, 100)}) } )");
+
+    final JSObject promise = (JSObject) func1.invoke((Consumer<Double>) (x) -> { /* Do nothing, this should fail anyway */});
+
+    CompletableFuture<Double> future = new CompletableFuture<>();
+    ((JSObject) promise.getProperty("catch")).invoke(promise, (Consumer<JSObject>) (e) -> future.complete(23.0));
+
+    return future.get();
+  }
+
+  // Return the promise returned by a lambda invocation
+  public static JSObject javaLambdaFromJSPromise(int a) throws InterruptedException, ExecutionException {
+    final JSObject func1 =
+      (JSObject) Eval.eval("( function(f) { return new Promise((resolve, reject) => {setTimeout(() => {f(100).then(resolve, reject);}, 100)}) } )");
+
+    final JSObject promise = (JSObject) func1.invoke((Function<Double, Double>) (x) -> x * a);
+
+    return promise;
+  }
+
+  // Return the failed promise returned by a lambda invocation with exception
+  public static JSObject javaLambdaFromJSFailedPromise(int a) throws InterruptedException, ExecutionException {
+    final JSObject func1 =
+      (JSObject) Eval.eval("( function(f) { return new Promise((resolve, reject) => {setTimeout(() => {f('xyz').then(resolve, reject);}, 100)}) } )");
+
+    final JSObject promise = (JSObject) func1.invoke((Consumer<Double>) (x) -> { /* Do nothing, this should fail anyway */});
+
+    return promise;
+  }
 }

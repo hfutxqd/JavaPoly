@@ -15,17 +15,17 @@ class SystemJSObject extends SystemJSValue implements JSObject {
     return result;
   }
 
-  public JSValue invoke(Object... args) {
+  public JSValue invoke(JSObject invokeOn, Object... args) {
     final Object[] unwrappedArgs = new Object[args.length];
     for (int i = 0; i < args.length; i++) {
       final Object e = args[i];
       unwrappedArgs[i] = (e instanceof SystemJSValue) ? ((SystemJSValue) e).rawValue : e;
     }
-    return invoke(rawValue, unwrappedArgs);
+    return invoke(rawValue, ((SystemJSObject)invokeOn).getRawValue(), unwrappedArgs);
   }
 
-  private JSValue invoke(Object functionObj, Object... args) {
-    return bridge.invoke(functionObj, args);
+  private JSValue invoke(Object functionObj, Integer invokeOn, Object... args) {
+    return bridge.invoke(functionObj, invokeOn, args);
   }
 
   public int getRawValue() {

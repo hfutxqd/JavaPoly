@@ -230,7 +230,7 @@ registerNatives({
       return getRawType(thread, obj[nameStr]);
     },
 
-    'invoke(Ljava/lang/Object;[Ljava/lang/Object;)[Ljava/lang/Object;': function(thread, toInvoke, args) {
+    'invoke(Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)[Ljava/lang/Object;': function(thread, toInvoke, invokeOn, args) {
       var ubArgs = args.array.map( (e) => {
         if (typeof e === "object" && typeof e['getClass'] === "function") {
           var intName = e.getClass().getInternalName();
@@ -238,6 +238,18 @@ registerNatives({
             return e.unbox();
           } else if (intName === 'Ljava/lang/String;') {
             return e.toString();
+          } else if (intName === 'Lcom/javapoly/MethodInvoker;') {
+            return function() {
+              return new Promise((resolve, reject) => {
+                javapoly0.dispatcher.postMessage("PRECISE_METHOD_INVOCATION", 0, [e, wrapArray(thread, arguments)], (result) => {
+                  if (result.success) {
+                    resolve(result.returnValue);
+                  } else {
+                    reject(result.cause);
+                  }
+                });
+              });
+            }
           } else {
             return e;
           }
@@ -245,7 +257,13 @@ registerNatives({
           return e;
         }
       });
-      var res = toInvoke.apply(null, ubArgs);
+      if (invokeOn !== null && typeof invokeOn === "object" && typeof invokeOn['getClass'] === "function") {
+          var intName = invokeOn.getClass().getInternalName();
+          if (intName === "Lcom/javapoly/DoppioJSObject;") {
+            invokeOn = invokeOn["com/javapoly/DoppioJSValue/rawValue"];
+          }
+      }
+      var res = toInvoke.apply(invokeOn, ubArgs);
       return getRawType(thread, res);
     }
   },
