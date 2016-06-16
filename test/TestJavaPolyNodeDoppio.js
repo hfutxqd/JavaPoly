@@ -91,6 +91,9 @@ describe('javapoly test', function() {
     runScript("test/units/eval.js");
     testEval();
 
+    runScript("test/units/lambdas.js");
+    testEval();
+
   });
 
   describe('Exception Tests', function() {
