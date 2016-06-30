@@ -422,7 +422,12 @@ class SystemBridge implements Bridge {
 
       connection.disconnect();
 
-      return toJSValue(responseObj.get("result"));
+      final JsonValue result = responseObj.get("result");
+      if (result != null) {
+        return toJSValue(result);
+      } else {
+        throw new EvalException(responseObj.getString("error"));
+      }
     } catch (IOException e) {
       e.printStackTrace();
       return null;

@@ -108,9 +108,13 @@ export default class NodeSystemDispatcher extends CommonDispatcher {
       response.end();
     } else if (urlParts.pathname === "/eval") {
       this.readStream(incoming, (s) => {
-        const result = eval(s);
         response.writeHead(200, {'Content-Type': 'text/plain' });
-        response.write(JSON.stringify({result: _this.reflect(result)}));
+        try {
+          const result = eval(s);
+          response.write(JSON.stringify({result: _this.reflect(result)}));
+        } catch (e) {
+          response.write(JSON.stringify({error: _this.reflect(e.toString())}));
+        }
         response.end();
       });
     } else if (urlParts.pathname === "/invoke") {

@@ -107,7 +107,10 @@ describe('javapoly test', function() {
 
   describe('Eval Tests', function() {
     before(() => {
-      return addClass(path.resolve('test/classes/EvalTest.class'));
+      return Promise.all([
+        addClass(path.resolve('test/classes/EvalTest.class')),
+        addClass(path.resolve('test/classes/EvalExceptionTest.class'))
+      ]);
     });
 
     runScript("test/units/eval.js");

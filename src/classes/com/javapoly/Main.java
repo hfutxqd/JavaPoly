@@ -372,7 +372,7 @@ public final class Main {
     return bridge.wrapValue((String) res[0], res[1]);
   }
 
-  static final JSValue bridgedEval(final String s) {
+  static final JSValue bridgedEval(final String s) throws EvalException {
     return bridge.eval(s);
   }
 

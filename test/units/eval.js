@@ -33,6 +33,19 @@ function testEval() {
       });
     });
 
+    it('eval exceptions should be handled', function() {
+      return new Promise(function(resolve, reject) {
+        return JavaPoly.type('EvalExceptionTest').then(function(EvalExceptionTest) {
+          return EvalExceptionTest.test().then(function(result) {
+            reject("got unexpected result");
+          }, (error) => {
+            expect(error.name).toEqual("com.javapoly.EvalException");
+            resolve("all fine");
+          });
+        });
+      });
+    });
+
   });
 }
 

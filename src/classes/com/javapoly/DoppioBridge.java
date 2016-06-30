@@ -15,7 +15,7 @@ class DoppioBridge implements Bridge {
 
   private static native Object[] getRawType(Object obj);
 
-  public JSValue eval(final String s) {
+  public JSValue eval(final String s) throws EvalException {
     final Object[] res = evalRaw(s);
     return wrapValue((String) res[0], res[1]);
   }
@@ -25,7 +25,7 @@ class DoppioBridge implements Bridge {
    *  In the returned array, the first element is of type `String`, containing the result of JS `typeof`.
    *  and the second element is the actual result of eval.
    * */
-  private static native Object[] evalRaw(String s);
+  private static native Object[] evalRaw(String s) throws EvalException;
 
   public JSValue wrapValue(String description, Object obj) {
     switch (description) {
