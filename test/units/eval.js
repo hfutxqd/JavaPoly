@@ -3,7 +3,7 @@ function testEval() {
 
     it('integer result', function() {
       return JavaPoly.type('com.javapoly.Eval').then(function(Eval) {
-        Eval.eval("40 + 2").then(function(result) {
+        return Eval.eval("40 + 2").then(function(result) {
           expect(result).toEqual(42);
         });
       });
@@ -11,7 +11,7 @@ function testEval() {
 
     it('array result', function() {
       return JavaPoly.type('com.javapoly.Eval').then(function(Eval) {
-        Eval.eval("'a,b,c'.split(',')").then(function(result) {
+        return Eval.eval("'a,b,c'.split(',')").then(function(result) {
           expect(result).toEqual(["a", "b", "c"]);
         });
       });
