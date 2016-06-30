@@ -209,7 +209,7 @@ export default class NodeSystemDispatcher extends CommonDispatcher {
   }
 
   unreflect(result) {
-    if ((!!result) && (typeof(result) === "object") && (!!result.jsObj)) {
+    if ((!!result) && (typeof(result) === "object") && (result.hasOwnProperty("jsObj"))) {
       return this.reflected[result.jsObj];
     }
     return result;
