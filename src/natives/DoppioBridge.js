@@ -150,38 +150,6 @@ function getRawType(thread, obj) {
   return util.newArrayFromData(thread, thread.getBsCl(), '[Ljava/lang/Object;', [util.initString(thread.getBsCl(), typeof obj), obj])
 }
 
-// This is adapted from doppio's thread.throwNewException(). That one doesn't use the thread's class loader. See https://github.com/plasma-umass/doppio/issues/468
-function throwNewException(thread, clsName, msg) {
-  var cls = thread.getLoader().getInitializedClass(thread, clsName),
-    throwException = () => {
-      var eCons = cls.getConstructor(thread),
-        e = new eCons(thread);
-
-      // Construct the exception, and throw it when done.
-      e['<init>(Ljava/lang/String;)V'](thread, [util.initString(thread.getLoader(), msg)], (err) => {
-        if (err) {
-          thread.throwException(err);
-        } else {
-          thread.throwException(e);
-       }
-     });
-   };
-   if (cls != null) {
-     // No initialization required.
-     throwException();
-   } else {
-     // Initialization required.
-     thread.setStatus(ThreadStatus.ASYNC_WAITING);
-     thread.getLoader().initializeClass(thread, clsName, (cdata) => {
-       if (cdata != null) {
-         cls = cdata;
-         throwException();
-       }
-     }, false);
-   }
- }
-
-
 registerNatives({
   'com/javapoly/DoppioBridge': {
 
@@ -192,7 +160,7 @@ registerNatives({
         var res = eval(expr);
         thread.asyncReturn(util.newArrayFromData(thread, thread.getBsCl(), '[Ljava/lang/Object;', [util.initString(thread.getBsCl(), typeof res), res]));
       } catch (e) {
-        throwNewException(thread, "Lcom/javapoly/EvalException;", "error while evaling: " + e);
+        thread.throwNewException("Lcom/javapoly/EvalException;", "error while evaling: " + e);
       }
     },
 
