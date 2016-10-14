@@ -1,4 +1,9 @@
 "use strict";
+
+import doppiojvm from 'doppiojvm';
+
+const util = doppiojvm.VM.Util;
+
 registerNatives({
   'com/javapoly/XHRHttpURLConnection': {
 
