@@ -12,7 +12,7 @@ function initJavaPoly() {
 
   global.isWorkerBased = false;
 
-  const doppioBase = path.resolve("node_modules/@hrj/doppiojvm-snapshot/dist/release-cli/")
+  const doppioBase = path.resolve("node_modules/doppiojvm/dist/release-cli/")
   const javapolyBase = path.resolve("build/");
 
   global.Doppio = require(doppioBase + "/src/doppiojvm.js");
