@@ -1,6 +1,6 @@
 var path = require('path');
 
-const doppioPath = "./node_modules/@hrj/doppiojvm-snapshot/";
+const doppioPath = "./node_modules/doppiojvm/";
 
 const babelTransforms = [
     ["babelify", {"presets": ["es2015"], "plugins": ["transform-runtime"]}]
